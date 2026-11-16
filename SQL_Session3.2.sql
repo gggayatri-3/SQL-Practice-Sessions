@@ -1,0 +1,169 @@
+-----------------------------------------AGGRIGATION FUNCTIONS--------------------------------------------
+-- AGGRIGATION FUNCTIONS COMES WITH 'GROUP BY'
+-- GROUP BY - WORKS ON COLUMNS, IT WORKS BY DIVIDING ONE TABLE INTO TWO DIFFERENT PARTS
+-- COUNT/SUM/MIN/MAX/AVERAGE/LENGTH ETC
+----------------------------------------ANALYTICAL FUNCTIONS----------------------------------------------
+-- ANALYTICAL FUNCTIONS COMES WITH 'PARTITION BY'.
+-- PARTITION BY creates separate groups and analyzes the rows within each group without combining them into a single row.
+
+-- Remember the difference:
+-- GROUP BY → Combines rows into one row per group.
+--  PARTITION BY → Divides rows into groups but keeps all individual rows visible.
+
+-- ANALYTICAL FUNCTIONS:
+-- 1) ROW_NUMBER(): assigns a unique sequential number to every row, even if some rows contain repeated or duplicate values.
+-- SYNTAX EXAMPLE:
+-- 1. ROW_NUMBER employees based on highest salary
+-- Every employee gets a unique number
+-- SELECT 
+-- FIRST_NAME,
+-- EMPLOYEE_ID,
+-- SALARY,
+-- ROW_NUMBER() OVER (ORDER BY SALARY DESC) AS ROW_NUMBER
+-- FROM HR.EMPLOYEES;
+
+-- 2. ROW_NUMBER department-wise based on salary
+-- SELECT
+--     employee_id,
+--     first_name,
+--     department_id,
+--     salary,
+--     ROW_NUMBER() OVER (
+--         PARTITION BY department_id
+--         ORDER BY salary DESC
+--     ) AS dept_row_number
+-- FROM hr.employees;
+
+-- 3. Find Top 5 highest-paid employees using ROW_NUMBER
+-- SELECT *
+-- FROM (
+--     SELECT
+--         employee_id,
+--         first_name,
+--         salary,
+--         ROW_NUMBER() OVER (ORDER BY salary DESC) AS rn
+--     FROM hr.employees
+-- )
+-- WHERE rn <= 5;
+
+-- 4.Display first 10 employees using ROWNUM
+-- SELECT
+--     employee_id,
+--     first_name,
+--     last_name,
+--     salary
+-- FROM hr.employees
+-- WHERE ROWNUM <= 10;
+
+-- 5. Find Top 10 highest-paid employees using ROWNUM
+-- ORDER BY must happen inside the subquery
+-- SELECT
+--     employee_id,
+--     first_name,
+--     salary
+-- FROM (
+--     SELECT
+--         employee_id,
+--         first_name,
+--         salary
+--     FROM hr.employees
+--     ORDER BY salary DESC
+-- )
+-- WHERE ROWNUM <= 10;
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-- 2) RANK(): Assigns the same rank to rows having the same value, but skips the next rank number based on the number of tied rows.
+--  Gives the same rank to tied values and skips the next rank numbers.
+-- RANK() represents the actual position of a value in an ordered ranking.
+-- If two rows share the same position, the next position is skipped to account for the tied rows.
+
+-- SYNTAX EXAMPLE:
+-- 1. RANK employees based on highest salary
+-- Same salary = same rank, next rank may be skipped
+-- SELECT 
+-- EMPLOYEE_ID,
+-- FIRST_NAME,
+-- SALARY,
+-- RANK() OVER (ORDER BY SALARY DESC) AS SALARY_RANK
+-- FROM HR. EMPLOYEES;
+
+-- 2. RANK employees department-wise based on salary
+-- Ranking starts again for every department
+-- SELECT
+--     employee_id,
+--     first_name,
+--     department_id,
+--     salary,
+--     RANK() OVER (
+--         PARTITION BY department_id
+--         ORDER BY salary DESC
+--     ) AS dept_salary_rank
+-- FROM hr.employees;
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- 3) DENSE_RANK(): Assigns the same rank to rows having the same value, but unlike RANK(), it never skips the next rank number.
+-- Think of it like arranging books on a shelf.
+-- Even if two books have the same position or rank, you don't leave an empty space before placing the next book.
+-- That's why it is called DENSE ranking - the ranking numbers remain continuous without gaps.
+-- SYNTAX EXAMPLE:
+-- 1. DENSE_RANK employees based on highest salary
+-- Same salary = same rank, but ranks are NOT skipped
+-- SELECT 
+-- FIRST_NAME,
+-- EMPLOYEE_ID,
+-- SALARY,
+-- DENSE_RANK() OVER (ORDER BY SALARY ) AS SALARY_DENSE_RANK
+-- FROM HR.EMPLOYEES;
+
+-- 2. DENSE_RANK employees department-wise based on salary
+-- SELECT
+--     employee_id,
+--     first_name,
+--     department_id,
+--     salary,
+--     DENSE_RANK() OVER (
+--         PARTITION BY department_id
+--         ORDER BY salary DESC
+--     ) AS dept_dense_rank
+-- FROM hr.employees;
+
+-- 3.  Find employees with Top 3 salary ranks using DENSE_RANK
+-- Includes employees having same salary
+-- SELECT *
+-- FROM (
+--     SELECT
+--         employee_id,
+--         first_name,
+--         salary,
+--         DENSE_RANK() OVER (ORDER BY salary DESC) AS salary_rank
+--     FROM hr.employees
+-- )
+-- WHERE salary_rank <= 3;
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- 4) FIRST_VALUE():Returns the first value from the specified ordered group of rows
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- 5) lAST_VALUE(): Returns the last value from the window.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- 6) LAG() → Retrieves the value from a previous row without using a self-join.
+-- In simple words, it helps us look at the value in the previous row while staying on the current row.
+-- How does it work?
+-- Employee A → No previous row exists, so NULL appears.
+-- Employee B → Gets Employee A's salary (3000).
+-- Employee C → Gets Employee B's salary (4000).
+-- Employee D → Gets Employee C's salary (5000).
+-- Employee E → Gets Employee D's salary (6000).
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- 7) LEAD(): Retrieves the value from the next row without using a self-join.
+-- In simple words, it helps us look at the value in the upcoming row while staying on the current row.
+-- LAG() → Looks backwards (previous row).
+-- LEAD() → Looks forward (next row).
+-- FOR EXAMPLE --> You want to see the next employee's salary alongside the current employee's salary.
+-- How does it work?
+-- Employee A → Gets Employee B's salary (4000).
+-- Employee B → Gets Employee C's salary (5000).
+-- Employee C → Gets Employee D's salary (6000).
+-- Employee D → Gets Employee E's salary (7000).
+-- Employee E → No next row exists, so NULL appears.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
