@@ -1,0 +1,108 @@
+-----------------------------------------ANALYTICAL FUNCTIONS HANDS ON------------------------------------------------------------
+-- 1. RANK employees based on highest salary
+-- Same salary = same rank, next rank may be skipped
+-- SELECT 
+-- EMPLOYEE_ID,
+-- SALARY,
+-- FIRST_NAME,
+-- RANK() OVER(ORDER BY SALARY DESC ) AS SALARY_RANK
+-- FROM HR.EMPLOYEES;
+
+-- 2. DENSE_RANK employees based on highest salary
+-- Same salary = same rank, but ranks are NOT skipped
+-- SELECT 
+-- SALARY,
+-- FIRST_NAME,
+-- EMPLOYEE_ID,
+-- DENSE_RANK() OVER ( ORDER BY SALARY DESC) AS SALARY_DENSE_RANK
+-- FROM HR.EMPLOYEES;
+
+-- 3. ROW_NUMBER employees based on highest salary
+-- Every employee gets a unique number
+-- SELECT 
+-- SALARY,
+-- FIRST_NAME,
+-- EMPLOYEE_ID,
+-- ROW_NUMBER() OVER (ORDER BY SALARY DESC) AS ROW_NUMBER
+-- FROM HR.EMPLOYEES;
+
+-- 4. RANK employees department-wise based on salary
+-- Ranking starts again for every department
+-- SELECT
+-- DEPARTMENT_ID,
+-- FIRST_NAME,
+-- SALARY,
+-- EMPLOYEE_ID,
+-- RANK() OVER (
+--     PARTITION BY DEPARTMENT_ID 
+--     ORDER BY SALARY DESC) AS DEPT_SALARY_RANK
+-- FROM HR.EMPLOYEES;
+
+-- 5. DENSE_RANK employees department-wise based on salary
+-- SELECT 
+-- DEPARTMENT_ID,
+-- SALARY,
+-- EMPLOYEE_ID,
+-- FIRST_NAME,
+-- DENSE_RANK() OVER (PARTITION BY DEPARTMENT_ID 
+--                    ORDER BY SALARY DESC) AS DEPT_DENSE_RANK
+-- FROM HR.EMPLOYEES;
+
+-- 6. ROW_NUMBER department-wise based on salary
+-- SELECT
+-- DEPARTMENT_ID,
+-- EMPLOYEE_ID,
+-- SALARY,
+-- FIRST_NAME,
+-- ROW_NUMBER() OVER( PARTITION BY DEPARTMENT_ID 
+--                    ORDER BY SALARY DESC) AS DEPT_ROW_NUM
+-- FROM HR.EMPLOYEES;
+
+-- 7. Find Top 5 highest-paid employees using ROW_NUMBER
+-- SELECT *
+-- FROM (
+-- SELECT
+-- FIRST_NAME,
+-- SALARY,
+-- EMPLOYEE_ID,
+-- ROW_NUMBER() OVER (ORDER BY SALARY DESC) AS RN
+-- FROM HR.EMPLOYEES
+-- )
+-- WHERE RN <= 5;
+
+-- 8. Find employees with Top 3 salary ranks using DENSE_RANK
+-- Includes employees having same salary
+-- SELECT *
+-- FROM(
+--     SELECT
+--     EMPLOYEE_ID,
+--     SALARY,
+--     FIRST_NAME,
+--     DENSE_RANK() OVER(ORDER BY SALARY DESC) AS SALARY_RANK
+--     FROM HR.EMPLOYEES
+-- )WHERE SALARY_RANK <= 3;
+
+-- 9. Display first 10 employees using ROWNUM
+-- SELECT
+--     FIRST_NAME,
+--     LAST_NAME,
+--     SALARY,
+--     EMPLOYEE_ID
+--     FROM HR.EMPLOYEES
+--     WHERE ROWNUM <= 10;
+    
+-- 10. Find Top 10 highest-paid employees using ROWNUM
+-- ORDER BY must happen inside the subquery
+-- SELECT
+--     employee_id,
+--     first_name,
+--     salary
+-- FROM (
+--     SELECT
+--         employee_id,
+--         first_name,
+--         salary
+--     FROM hr.employees
+--     ORDER BY salary DESC
+-- )
+-- WHERE ROWNUM <= 10;
